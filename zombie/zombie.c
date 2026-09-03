@@ -6,13 +6,13 @@ int main(void)
 {
     pid_t pid = fork();
 
-    if (pid < 0)
+    if (pid < 0) /* error */
     {
         perror("fork");
-        return 1;
+        return -1;
     }
 
-    if (pid == 0)
+    if (pid == 0) /* child process die first */
     {
         printf("Child PID = %d\n", getpid());
 
@@ -20,14 +20,15 @@ int main(void)
 
         _exit(0);
     }
-    else
+    else /* parent process */
     {
         printf("Parent PID = %d\n", getpid());
         printf("Child PID = %d\n", pid);
 
         printf("Parent sleeps for 30 seconds...\n");
 
-        sleep(30);
+        /* wait input from terminal */
+        getchar();
 
         printf("Parent calls waitpid()\n");
 

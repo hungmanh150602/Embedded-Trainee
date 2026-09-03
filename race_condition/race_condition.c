@@ -1,30 +1,44 @@
 #include <stdio.h>
+/* library for mmap() */
+#include <sys/mman.h>
+#include <stdlib.h>
+/* library for fork() */
 #include <unistd.h>
-#include <sys/wait.h>
 
-int main()
+int main(int argc, char *argv[])
 {
+    /* create an pointer points to the shared memory region */
+    int *counter = mmap(NULL,
+                        sizeof(int),
+                        PROT_READ | PROT_WRITE,
+                        MAP_SHARED | MAP_ANONYMOUS,
+                        -1,
+                        0);
+
+    *counter = 0;
+
     pid_t pid = fork();
 
-    if (pid == 0)
+    /* error fork */
+    if (pid < 0)
     {
-        /* CHILD */
-        printf("Child: preparing important data...\n");
-
-        FILE *fp = fopen("important.txt", "w");
-        fprintf(fp, "IMPORTANT DATA\n");
-
-        printf("Child: now exec another program...\n");
-
-        /* call exec() */
-        execl("/home/hungubuntu/Vim_C_code/test", "test", NULL);
-
-        perror("exec");
-        exit(127);
+        perror("fork");
+        exit(-1);
     }
-    else
+
+    /*
+        Both the parent and child processes access the same memory region.    
+    */
+    for (int i = 0; i < 100000; i++)
     {
-        wait(NULL);
-        printf("I am parent.  Child already done!\n");
+        (*counter)++;
     }
+
+    /* parent prints out the value of counter after done */
+    if (pid > 0)
+    {
+        printf("Final counter = %d\n", *counter);
+    }
+
+    return 0;
 }

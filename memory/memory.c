@@ -7,6 +7,11 @@ int global_uninit;
 static int static_init = 20;
 static int static_uninit;
 
+/*
+function print out address of:
+    foo function
+    local variable in function
+*/
 void foo(void)
 {
     int local = 30;

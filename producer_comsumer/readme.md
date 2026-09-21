@@ -1,16 +1,17 @@
-# về ví dụ này
+# About this example
 
-Tôi thực hiện việc sử dụng shared memory 1 struct giữa 2 process: producer và consumer.
-Bên cạnh đó, tôi sử dụng 1 semaphore set có 2 semaphore bên trong để tạo đồng bộ giữa 2 bên:
+I am implementing a setup where two processes: a producer and a consumer, share a single struct in shared memory.
 
-- `sem[0]` dùng cho đánh thức consumer.
-- `sem[1]` dùng cho đánh thức producer.
+Additionally, I use a semaphore set containing two semaphores to synchronize the two processes:
 
-Quá trình thực hiện được mô tả ngắn gọn như sau:
+- `sem[0]` is used to wake up the consumer.
+- `sem[1]` is used to wake up the producer.
 
-- Bên producer sẽ liên tục tăng biến `money` lên 10 mỗi 1s. Khi giá trị đạt 100, nó sẽ đánh thức consumer thông qua semaphore `sem[0]` và đợi tín hiệu đánh thức từ `sem[1]`.
-- Bên consumer chờ tín hiệu đánh thức `sem[0]`, sau đó thực hiện việc trừ 50 từ biến `money`, sau khi thực hiện xong, nó đánh thức producer thông qua `sem[1]`.
+The process is briefly described as follows:
 
-Kết quả được minh họa như hình bên dưới:
+- The producer continuously increments a `money` variable by 10 every second. When the value reaches 100, it wakes up the consumer via `sem[0]` and waits for a wake-up signal from `sem[1]`.
+- The consumer waits for the wake-up signal from `sem[0]`, then subtracts 50 from the `money` variable; once this is done, it wakes up the producer via `sem[1]`.
+
+The result is illustrated in the image below:
 
 ![alt text](image.png)
